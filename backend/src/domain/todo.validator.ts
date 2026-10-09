@@ -1,0 +1,72 @@
+import { ApiError } from '../errors/ApiError';
+import type { CreateTodoInput, UpdateTodoInput } from './todo.types';
+
+const TITLE_MAX = 255;
+const DESCRIPTION_MAX = 1000;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+function isValidDate(value: string): boolean {
+  if (!DATE_RE.test(value)) return false;
+  const d = new Date(value);
+  return !isNaN(d.getTime()) && d.toISOString().startsWith(value);
+}
+
+export function validateCreateInput(input: CreateTodoInput): void {
+  const fields: Record<string, 'REQUIRED' | 'INVALID_FORMAT' | 'INVALID_TYPE' | 'TOO_LONG'> = {};
+
+  if (!input.title || input.title.trim().length === 0) {
+    fields['title'] = 'REQUIRED';
+  } else if (input.title.length > TITLE_MAX) {
+    fields['title'] = 'TOO_LONG';
+  }
+
+  if (input.description !== undefined && input.description !== null) {
+    if (typeof input.description !== 'string') {
+      fields['description'] = 'INVALID_TYPE';
+    } else if (input.description.length > DESCRIPTION_MAX) {
+      fields['description'] = 'TOO_LONG';
+    }
+  }
+
+  if (input.dueDate !== undefined && input.dueDate !== null) {
+    if (typeof input.dueDate !== 'string') {
+      fields['dueDate'] = 'INVALID_TYPE';
+    } else if (!isValidDate(input.dueDate)) {
+      fields['dueDate'] = 'INVALID_FORMAT';
+    }
+  }
+
+  if (Object.keys(fields).length > 0) {
+    throw ApiError.validationError(fields);
+  }
+}
+
+export function validateUpdateInput(input: UpdateTodoInput): void {
+  const fields: Record<string, 'REQUIRED' | 'INVALID_FORMAT' | 'INVALID_TYPE' | 'TOO_LONG'> = {};
+
+  if (!input.title || input.title.trim().length === 0) {
+    fields['title'] = 'REQUIRED';
+  } else if (input.title.length > TITLE_MAX) {
+    fields['title'] = 'TOO_LONG';
+  }
+
+  if (input.description !== undefined && input.description !== null) {
+    if (typeof input.description !== 'string') {
+      fields['description'] = 'INVALID_TYPE';
+    } else if (input.description.length > DESCRIPTION_MAX) {
+      fields['description'] = 'TOO_LONG';
+    }
+  }
+
+  if (input.dueDate !== undefined && input.dueDate !== null) {
+    if (typeof input.dueDate !== 'string') {
+      fields['dueDate'] = 'INVALID_TYPE';
+    } else if (!isValidDate(input.dueDate)) {
+      fields['dueDate'] = 'INVALID_FORMAT';
+    }
+  }
+
+  if (Object.keys(fields).length > 0) {
+    throw ApiError.validationError(fields);
+  }
+}
