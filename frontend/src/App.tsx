@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import './App.css';
 import type { TodoItem, TodoSummary, CreateTodoInput, UpdateTodoInput, ApiError } from './types/todo';
 import {
   fetchTodos,
