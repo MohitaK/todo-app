@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import type { TodoItem, TodoSummary, CreateTodoInput, UpdateTodoInput, ApiError } from './types/todo';
+import type { TodoItem, TodoSummary, CreateTodoInput, UpdateTodoInput, ApiError, FilterStatus, SortBy } from './types/todo';
 import {
   fetchTodos,
   createTodo,
@@ -23,12 +23,14 @@ export default function App() {
   const [view, setView] = useState<View>('list');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<FilterStatus | undefined>(undefined);
+  const [sortBy, setSortBy] = useState<SortBy | undefined>(undefined);
 
   async function loadTodos() {
     setLoading(true);
     setError(null);
     try {
-      setTodos(await fetchTodos());
+      setTodos(await fetchTodos(filter, sortBy));
     } catch (err) {
       setError((err as ApiError).message ?? 'Failed to load todos');
     } finally {
@@ -36,7 +38,7 @@ export default function App() {
     }
   }
 
-  useEffect(() => { void loadTodos(); }, []);
+  useEffect(() => { void loadTodos(); }, [filter, sortBy]);
 
   async function withError(fn: () => Promise<void>) {
     try {
@@ -119,6 +121,35 @@ export default function App() {
         {view === 'list' && (
           <>
             <TodoForm onSubmit={handleCreate} />
+
+            <div className="list-toolbar">
+              <div className="toolbar-group">
+                <label htmlFor="filter-select">Filter</label>
+                <select
+                  id="filter-select"
+                  value={filter ?? ''}
+                  onChange={(e) => setFilter((e.target.value as FilterStatus) || undefined)}
+                >
+                  <option value="">All</option>
+                  <option value="incomplete">Incomplete</option>
+                  <option value="completed">Completed</option>
+                  <option value="overdue">Overdue</option>
+                </select>
+              </div>
+              <div className="toolbar-group">
+                <label htmlFor="sort-select">Sort</label>
+                <select
+                  id="sort-select"
+                  value={sortBy ?? ''}
+                  onChange={(e) => setSortBy((e.target.value as SortBy) || undefined)}
+                >
+                  <option value="">Date Added</option>
+                  <option value="dueDate">Due Date</option>
+                  <option value="title">Title</option>
+                </select>
+              </div>
+            </div>
+
             {loading
               ? <p className="loading">Loading…</p>
               : <TodoList
