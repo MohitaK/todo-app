@@ -1,5 +1,13 @@
 import type { TodoItem } from '../types/todo';
 
+const today = new Date().toISOString().slice(0, 10);
+
+function getStatus(todo: TodoItem): { label: string; cls: string } {
+  if (todo.isCompleted) return { label: 'Completed', cls: 'status-done' };
+  if (todo.dueDate && todo.dueDate < today) return { label: 'Overdue', cls: 'status-overdue' };
+  return { label: 'Pending', cls: 'status-pending' };
+}
+
 interface Props {
   todo: TodoItem;
   onEdit: () => void;
@@ -10,6 +18,7 @@ interface Props {
 }
 
 export function TodoDetail({ todo, onEdit, onComplete, onIncomplete, onDelete, onBack }: Props) {
+  const status = getStatus(todo);
   return (
     <div className="todo-detail">
       <button onClick={onBack} className="btn-back">← Back</button>
@@ -17,9 +26,7 @@ export function TodoDetail({ todo, onEdit, onComplete, onIncomplete, onDelete, o
       <div className="detail-fields">
         <div className="detail-row">
           <span className="detail-label">Status</span>
-          <span className={`todo-status ${todo.isCompleted ? 'status-done' : 'status-pending'}`}>
-            {todo.isCompleted ? 'Completed' : 'Pending'}
-          </span>
+          <span className={`todo-status ${status.cls}`}>{status.label}</span>
         </div>
         {todo.description && (
           <div className="detail-row">

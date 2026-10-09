@@ -44,6 +44,7 @@ export function TodoForm({ onSubmit }: Props) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="What needs to be done?"
+          maxLength={255}
         />
         {titleError && <span className="field-error">{titleError}</span>}
       </div>
@@ -55,6 +56,7 @@ export function TodoForm({ onSubmit }: Props) {
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Optional details"
           rows={2}
+          maxLength={1000}
         />
       </div>
       <div className="field">

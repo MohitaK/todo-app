@@ -35,24 +35,24 @@ function validateOptionalFields(
   }
 }
 
-export function validateCreateInput(input: CreateTodoInput): void {
-  const fields: FieldErrors = {};
-  if (!input.title || input.title.trim().length === 0) {
+function validateTitle(title: unknown, fields: FieldErrors): void {
+  if (typeof title !== 'string' || title.trim().length === 0) {
     fields['title'] = 'REQUIRED';
-  } else if (input.title.length > TITLE_MAX) {
+  } else if (title.length > TITLE_MAX) {
     fields['title'] = 'TOO_LONG';
   }
+}
+
+export function validateCreateInput(input: CreateTodoInput): void {
+  const fields: FieldErrors = {};
+  validateTitle(input.title, fields);
   validateOptionalFields(input, fields);
   if (Object.keys(fields).length > 0) throw ApiError.validationError(fields);
 }
 
 export function validateUpdateInput(input: UpdateTodoInput): void {
   const fields: FieldErrors = {};
-  if (!input.title || input.title.trim().length === 0) {
-    fields['title'] = 'REQUIRED';
-  } else if (input.title.length > TITLE_MAX) {
-    fields['title'] = 'TOO_LONG';
-  }
+  validateTitle(input.title, fields);
   validateOptionalFields(input, fields);
   if (Object.keys(fields).length > 0) throw ApiError.validationError(fields);
 }

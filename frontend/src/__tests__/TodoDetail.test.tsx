@@ -36,9 +36,14 @@ describe('TodoDetail', () => {
   });
 
   it('shows "Pending" status and "Mark Complete" button when not completed', () => {
-    render(<TodoDetail todo={makeTodo({ isCompleted: false })} onEdit={noop} onComplete={noop} onIncomplete={noop} onDelete={noop} onBack={noop} />);
+    render(<TodoDetail todo={makeTodo({ isCompleted: false, dueDate: null })} onEdit={noop} onComplete={noop} onIncomplete={noop} onDelete={noop} onBack={noop} />);
     expect(screen.getByText('Pending')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Mark Complete' })).toBeInTheDocument();
+  });
+
+  it('shows "Overdue" status when not completed and dueDate is in the past', () => {
+    render(<TodoDetail todo={makeTodo({ isCompleted: false, dueDate: '2020-01-01' })} onEdit={noop} onComplete={noop} onIncomplete={noop} onDelete={noop} onBack={noop} />);
+    expect(screen.getByText('Overdue')).toBeInTheDocument();
   });
 
   it('shows "Completed" status and "Mark Incomplete" button when completed', () => {

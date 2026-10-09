@@ -42,6 +42,7 @@ export function EditForm({ todo, onSubmit, onCancel }: Props) {
           id="edit-title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          maxLength={255}
         />
         {titleError && <span className="field-error">{titleError}</span>}
       </div>
@@ -53,6 +54,7 @@ export function EditForm({ todo, onSubmit, onCancel }: Props) {
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Clear to remove"
           rows={2}
+          maxLength={1000}
         />
       </div>
       <div className="field">
