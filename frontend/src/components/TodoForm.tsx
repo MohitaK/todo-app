@@ -63,6 +63,8 @@ export function TodoForm({ onSubmit }: Props) {
           id="new-due"
           type="date"
           value={dueDate}
+          min="1900-01-01"
+          max="2100-12-31"
           onChange={(e) => setDueDate(e.target.value)}
         />
       </div>

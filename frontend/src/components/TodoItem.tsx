@@ -9,7 +9,16 @@ interface Props {
   onDelete: (id: string) => void;
 }
 
+const today = new Date().toISOString().slice(0, 10);
+
+function getStatus(todo: TodoSummary): { label: string; cls: string } {
+  if (todo.isCompleted) return { label: 'Completed', cls: 'status-done' };
+  if (todo.dueDate && todo.dueDate < today) return { label: 'Overdue', cls: 'status-overdue' };
+  return { label: 'Pending', cls: 'status-pending' };
+}
+
 export function TodoItem({ todo, onView, onComplete, onIncomplete, onEdit, onDelete }: Props) {
+  const status = getStatus(todo);
   return (
     <li className={`todo-item ${todo.isCompleted ? 'completed' : ''}`}>
       <div className="todo-item-main">
@@ -17,9 +26,7 @@ export function TodoItem({ todo, onView, onComplete, onIncomplete, onEdit, onDel
           {todo.title}
         </span>
         {todo.dueDate && <span className="todo-due">Due: {todo.dueDate}</span>}
-        <span className={`todo-status ${todo.isCompleted ? 'status-done' : 'status-pending'}`}>
-          {todo.isCompleted ? 'Completed' : 'Pending'}
-        </span>
+        <span className={`todo-status ${status.cls}`}>{status.label}</span>
       </div>
       <div className="todo-actions">
         {todo.isCompleted

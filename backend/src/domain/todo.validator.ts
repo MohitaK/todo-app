@@ -7,6 +7,8 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 function isValidDate(value: string): boolean {
   if (!DATE_RE.test(value)) return false;
+  const year = parseInt(value.slice(0, 4), 10);
+  if (year < 1900 || year > 2100) return false;
   const d = new Date(value);
   return !isNaN(d.getTime()) && d.toISOString().startsWith(value);
 }
