@@ -20,8 +20,7 @@ function buildMockRepo(): jest.Mocked<ITodoRepository> {
     findAll: jest.fn(),
     findById: jest.fn(),
     update: jest.fn(),
-    complete: jest.fn(),
-    incomplete: jest.fn(),
+    setCompleted: jest.fn(),
     delete: jest.fn(),
   };
 }
@@ -129,29 +128,31 @@ describe('TodoService', () => {
   });
 
   describe('completeTodo', () => {
-    it('delegates to repo.complete and returns the result', async () => {
+    it('delegates to repo.setCompleted(true) and returns the result', async () => {
       const todo = makeTodo({ isCompleted: true });
-      repo.complete.mockResolvedValue(todo);
+      repo.setCompleted.mockResolvedValue(todo);
       const result = await service.completeTodo('uuid-1');
+      expect(repo.setCompleted).toHaveBeenCalledWith('uuid-1', true);
       expect(result.isCompleted).toBe(true);
     });
 
     it('throws NOT_FOUND when repo returns null', async () => {
-      repo.complete.mockResolvedValue(null);
+      repo.setCompleted.mockResolvedValue(null);
       await expect(service.completeTodo('missing')).rejects.toMatchObject({ code: 'NOT_FOUND' });
     });
   });
 
   describe('incompleteTodo', () => {
-    it('delegates to repo.incomplete and returns the result', async () => {
+    it('delegates to repo.setCompleted(false) and returns the result', async () => {
       const todo = makeTodo({ isCompleted: false });
-      repo.incomplete.mockResolvedValue(todo);
+      repo.setCompleted.mockResolvedValue(todo);
       const result = await service.incompleteTodo('uuid-1');
+      expect(repo.setCompleted).toHaveBeenCalledWith('uuid-1', false);
       expect(result.isCompleted).toBe(false);
     });
 
     it('throws NOT_FOUND when repo returns null', async () => {
-      repo.incomplete.mockResolvedValue(null);
+      repo.setCompleted.mockResolvedValue(null);
       await expect(service.incompleteTodo('missing')).rejects.toMatchObject({ code: 'NOT_FOUND' });
     });
   });

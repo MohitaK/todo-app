@@ -40,23 +40,12 @@ export class InMemoryTodoRepository implements ITodoRepository {
     return this.items[idx];
   }
 
-  async complete(id: string): Promise<TodoItem | null> {
+  async setCompleted(id: string, value: boolean): Promise<TodoItem | null> {
     const idx = this.items.findIndex((t) => t.id === id);
     if (idx === -1) return null;
     this.items[idx] = {
       ...this.items[idx],
-      isCompleted: true,
-      updatedAt: new Date().toISOString(),
-    };
-    return this.items[idx];
-  }
-
-  async incomplete(id: string): Promise<TodoItem | null> {
-    const idx = this.items.findIndex((t) => t.id === id);
-    if (idx === -1) return null;
-    this.items[idx] = {
-      ...this.items[idx],
-      isCompleted: false,
+      isCompleted: value,
       updatedAt: new Date().toISOString(),
     };
     return this.items[idx];

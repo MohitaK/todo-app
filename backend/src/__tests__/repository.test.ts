@@ -47,7 +47,7 @@ describe('InMemoryTodoRepository', () => {
 
     it('filters completed todos', async () => {
       const [first] = await repo.findAll();
-      await repo.complete(first!.id);
+      await repo.setCompleted(first!.id, true);
       const todos = await repo.findAll('completed');
       expect(todos).toHaveLength(1);
       expect(todos[0]!.isCompleted).toBe(true);
@@ -55,7 +55,7 @@ describe('InMemoryTodoRepository', () => {
 
     it('filters incomplete todos', async () => {
       const [first] = await repo.findAll();
-      await repo.complete(first!.id);
+      await repo.setCompleted(first!.id, true);
       const todos = await repo.findAll('incomplete');
       expect(todos).toHaveLength(2);
       todos.forEach((t: { isCompleted: boolean }) => expect(t.isCompleted).toBe(false));
@@ -73,7 +73,7 @@ describe('InMemoryTodoRepository', () => {
 
     it('does not include completed todos in overdue filter', async () => {
       const created = await repo.create({ title: 'Done overdue', dueDate: '2000-01-01' });
-      await repo.complete(created.id);
+      await repo.setCompleted(created.id, true);
       const todos = await repo.findAll('overdue');
       expect(todos.find((t: { id: string }) => t.id === created.id)).toBeUndefined();
     });
@@ -122,28 +122,22 @@ describe('InMemoryTodoRepository', () => {
     });
   });
 
-  describe('complete', () => {
+  describe('setCompleted', () => {
     it('sets isCompleted to true and updates updatedAt', async () => {
       const created = await repo.create({ title: 'Task' });
-      const result = await repo.complete(created.id);
+      const result = await repo.setCompleted(created.id, true);
       expect(result!.isCompleted).toBe(true);
     });
 
-    it('returns null for unknown id', async () => {
-      expect(await repo.complete('nonexistent')).toBeNull();
-    });
-  });
-
-  describe('incomplete', () => {
     it('sets isCompleted to false', async () => {
       const created = await repo.create({ title: 'Task' });
-      await repo.complete(created.id);
-      const result = await repo.incomplete(created.id);
+      await repo.setCompleted(created.id, true);
+      const result = await repo.setCompleted(created.id, false);
       expect(result!.isCompleted).toBe(false);
     });
 
     it('returns null for unknown id', async () => {
-      expect(await repo.incomplete('nonexistent')).toBeNull();
+      expect(await repo.setCompleted('nonexistent', true)).toBeNull();
     });
   });
 
@@ -186,7 +180,7 @@ describe('FileTodoRepository', () => {
 
   it('completes a todo and persists', async () => {
     const item = await repo.create({ title: 'Task' });
-    const completed = await repo.complete(item.id);
+    const completed = await repo.setCompleted(item.id, true);
     expect(completed!.isCompleted).toBe(true);
     expect(await repo.findById(item.id)).toMatchObject({ isCompleted: true });
   });
@@ -201,7 +195,7 @@ describe('FileTodoRepository', () => {
     expect(await repo.update('nonexistent', { title: 'X', description: null, dueDate: null })).toBeNull();
   });
 
-  it('returns null for unknown id on incomplete', async () => {
-    expect(await repo.incomplete('nonexistent')).toBeNull();
+  it('returns null for unknown id on setCompleted', async () => {
+    expect(await repo.setCompleted('nonexistent', true)).toBeNull();
   });
 });

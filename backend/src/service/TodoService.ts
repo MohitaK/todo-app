@@ -36,13 +36,13 @@ export class TodoService {
   }
 
   async completeTodo(id: string): Promise<TodoItem> {
-    const item = await this.repo.complete(id);
+    const item = await this.repo.setCompleted(id, true);
     if (!item) throw ApiError.notFound(`Todo with id '${id}' not found`);
     return item;
   }
 
   async incompleteTodo(id: string): Promise<TodoItem> {
-    const item = await this.repo.incomplete(id);
+    const item = await this.repo.setCompleted(id, false);
     if (!item) throw ApiError.notFound(`Todo with id '${id}' not found`);
     return item;
   }

@@ -63,20 +63,11 @@ export class FileTodoRepository implements ITodoRepository {
     return items[idx];
   }
 
-  async complete(id: string): Promise<TodoItem | null> {
+  async setCompleted(id: string, value: boolean): Promise<TodoItem | null> {
     const items = await this.readAll();
     const idx = items.findIndex((t) => t.id === id);
     if (idx === -1) return null;
-    items[idx] = { ...items[idx], isCompleted: true, updatedAt: new Date().toISOString() };
-    await this.writeAll(items);
-    return items[idx];
-  }
-
-  async incomplete(id: string): Promise<TodoItem | null> {
-    const items = await this.readAll();
-    const idx = items.findIndex((t) => t.id === id);
-    if (idx === -1) return null;
-    items[idx] = { ...items[idx], isCompleted: false, updatedAt: new Date().toISOString() };
+    items[idx] = { ...items[idx], isCompleted: value, updatedAt: new Date().toISOString() };
     await this.writeAll(items);
     return items[idx];
   }
