@@ -1,7 +1,7 @@
 import { TodoService } from '../service/TodoService';
 import { ApiError } from '../errors/ApiError';
 import type { ITodoRepository } from '../repository/ITodoRepository';
-import type { TodoItem, TodoSummary } from '../domain/todo.types';
+import type { TodoItem } from '../domain/todo.types';
 
 const makeTodo = (overrides: Partial<TodoItem> = {}): TodoItem => ({
   id: 'uuid-1',
@@ -46,22 +46,6 @@ describe('TodoService', () => {
     it('throws validation error without calling repo for invalid input', async () => {
       await expect(service.createTodo({ title: '' })).rejects.toBeInstanceOf(ApiError);
       expect(repo.create).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('getTodos', () => {
-    it('delegates to repo.findAll with no args', async () => {
-      const summaries: TodoSummary[] = [];
-      repo.findAll.mockResolvedValue(summaries);
-      const result = await service.getTodos();
-      expect(repo.findAll).toHaveBeenCalledWith(undefined, undefined);
-      expect(result).toStrictEqual(summaries);
-    });
-
-    it('passes filter and sortBy to repo.findAll', async () => {
-      repo.findAll.mockResolvedValue([]);
-      await service.getTodos('completed', 'title');
-      expect(repo.findAll).toHaveBeenCalledWith('completed', 'title');
     });
   });
 

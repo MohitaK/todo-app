@@ -82,16 +82,16 @@ export default function App() {
 
   async function handleComplete(id: string) {
     await withError(async () => {
-      await completeTodo(id);
-      if (activeTodo?.id === id) setActiveTodo(await getTodo(id));
+      const updated = await completeTodo(id);
+      if (activeTodo?.id === id) setActiveTodo(updated);
       await loadTodos();
     });
   }
 
   async function handleIncomplete(id: string) {
     await withError(async () => {
-      await incompleteTodo(id);
-      if (activeTodo?.id === id) setActiveTodo(await getTodo(id));
+      const updated = await incompleteTodo(id);
+      if (activeTodo?.id === id) setActiveTodo(updated);
       await loadTodos();
     });
   }
