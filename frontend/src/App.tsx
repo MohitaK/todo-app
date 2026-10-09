@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import './App.css';
 import type { TodoItem, TodoSummary, CreateTodoInput, UpdateTodoInput, ApiError, FilterStatus, SortBy } from './types/todo';
 import {
@@ -26,7 +26,7 @@ export default function App() {
   const [filter, setFilter] = useState<FilterStatus | undefined>(undefined);
   const [sortBy, setSortBy] = useState<SortBy | undefined>(undefined);
 
-  async function loadTodos() {
+  const loadTodos = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -36,9 +36,9 @@ export default function App() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [filter, sortBy]);
 
-  useEffect(() => { void loadTodos(); }, [filter, sortBy]);
+  useEffect(() => { void loadTodos(); }, [loadTodos]);
 
   async function withError(fn: () => Promise<void>) {
     try {
